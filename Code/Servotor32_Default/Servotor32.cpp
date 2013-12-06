@@ -40,13 +40,7 @@ void Servotor32::begin(){
   DDRF |= 0xF0;  // sets pins F7 to F4 as outputs
   DDRB = 0xFF;  // sets pins B0 to B7 as outputs
   
-  //setup PC serial port
-  Serial.begin(9600);
-  // reconfigure bluetooth module to 9600 baud id needed
-  Serial1.begin(115200);     // Changed from 9600 baud
-  Serial1.print("AT+BAUD4"); // Tell the module to change the baud rate to 9600
-  delay(1100); // Wait a notch over 1 second to make sure the setting "sticks"
-  Serial1.begin(9600);     // Changed from 9600 baud
+  // Serial setup moved to .ino setup()
   
   SPI.begin(); 
   SPI.setClockDivider(SPI_CLOCK_DIV2); 
