@@ -36,15 +36,8 @@ uint8_t group_latches[4] = {5,6,7,4};
 uint8_t pin_2_num[8] = {0x08,0x04,0x02,0x01, 0x80,0x40,0x20,0x10};
 
 void Servotor32::begin(){
-  //setup pin modes
-  DDRF |= 0xF0;  // sets pins F7 to F4 as outputs
-  DDRB = 0xFF;  // sets pins B0 to B7 as outputs
-  
   // Serial setup moved to .ino setup()
   
-  SPI.begin(); 
-  SPI.setClockDivider(SPI_CLOCK_DIV2); 
-
   Timer1.initialize(10);
   Timer1.attachInterrupt(callback);
 
@@ -63,12 +56,15 @@ void Servotor32::begin(){
     shift_latch[i] = 0xFF;
   } 
 
-  TIMSK0 &= ~(_BV(TOIE0)); // disables the arduino delay function, but also
-                           // all but eliminates servo jitter 
-  TIMSK2 &= ~(_BV(TOIE2)); // disable the arduino tone  function, but also
-                           // also helps eliminate some jitter
-  TIMSK3 &= ~(_BV(TOIE3)); // for good measure
-  TIMSK4 &= ~(_BV(TOIE4)); // for good measure 
+  // Disable these for now, maybe enable later
+  // TIMSK0 &= ~(_BV(TOIE0)); // disables the arduino delay function, but also
+  //                          // all but eliminates servo jitter 
+  // TIMSK2 &= ~(_BV(TOIE2)); // disable the arduino tone  function, but also
+  //                          // also helps eliminate some jitter
+
+  // Doesn't work on Uno
+  // TIMSK3 &= ~(_BV(TOIE3)); // for good measure
+  // TIMSK4 &= ~(_BV(TOIE4)); // for good measure 
 }
 
 long unsigned int us_counter = 0;
@@ -106,10 +102,11 @@ void Servotor32::callback(){
   cli();
   if(timer < 1100){ // keep it from updating servos mid-array change by some weird coincidence
     if(timer == servo_timings[counter]){ // if the time has arrived to update a shift reg
-      SPDR = shift_output[counter]; // push the byte to be loaded to the SPI register
-      while(!(SPSR & (1<<SPIF))); //wait till the register completes
-      PORTF &= ~(shift_latch[counter]); // clock the shift register latch pin low, setting the register
-      PORTF |= shift_latch[counter];  // clock the shift register latch pin high, ready to be set low next time
+      // Disable actual output
+      // SPDR = shift_output[counter]; // push the byte to be loaded to the SPI register
+      // while(!(SPSR & (1<<SPIF))); //wait till the register completes
+      // PORTF &= ~(shift_latch[counter]); // clock the shift register latch pin low, setting the register
+      // PORTF |= shift_latch[counter];  // clock the shift register latch pin high, ready to be set low next time
       counter++;
     }
   }
