@@ -4,9 +4,6 @@
 #include <string.h>
 #include "Arduino.h"
 
-#include "Servotor32_SPI.h"
-#include "Servotor32_TimerOne.h"
-
 Servotor32::Servotor32()
 {  
 
@@ -37,7 +34,7 @@ uint8_t pin_2_num[8] = {0x08,0x04,0x02,0x01, 0x80,0x40,0x20,0x10};
 
 void Servotor32::begin(){
   // Serial setup moved to .ino setup()
-  
+
   Timer1.initialize(10);
   Timer1.attachInterrupt(callback);
 
