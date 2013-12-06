@@ -1,3 +1,6 @@
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+
 #include "Servotor32.h" // call the servotor32 Library
 Servotor32 hexy; // create a servotor32 object
 

@@ -4,6 +4,11 @@
 #include <string.h>
 #include "Arduino.h"
 
+#include <Adafruit_PWMServoDriver.h>
+
+#define SERVOMIN  150 // this is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX  600 // this is the 'maximum' pulse length count (out of 4096)
+
 Servotor32::Servotor32()
 {  
 
@@ -32,8 +37,16 @@ uint16_t group_offsets[4] = {0,251,502,753};
 uint8_t group_latches[4] = {5,6,7,4};
 uint8_t pin_2_num[8] = {0x08,0x04,0x02,0x01, 0x80,0x40,0x20,0x10};
 
+// Use Adafruit PWM Servo Driver Library
+// called this way, it uses the default address 0x40
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+
 void Servotor32::begin(){
   // Serial setup moved to .ino setup()
+
+  // Setup pwm output
+  pwm.begin();
+  pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
 
   Timer1.initialize(10);
   Timer1.attachInterrupt(callback);
@@ -292,9 +305,11 @@ void Servotor32::changeServo(byte servo, short pos){
   }
   if(pos == -1){
     update_registers_fast(servo, pos);
+    pwm.setPWM(servo, 0, 0);
   }
   else{
     update_registers_fast(servo, pos/10);
+    pwm.setPWM(servo, 0, map(pos, 500, 2500, SERVOMIN, SERVOMAX));
   }
 }
 
