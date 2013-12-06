@@ -4,11 +4,13 @@ Servotor32 hexy; // create a servotor32 object
 void setup() {
   //setup PC serial port
   Serial.begin(9600);
+
+  // Don't setup Serial1 for Uno
   // reconfigure bluetooth module to 9600 baud id needed
-  Serial1.begin(115200);     // Changed from 9600 baud
-  Serial1.print("AT+BAUD4"); // Tell the module to change the baud rate to 9600
+  // Serial1.begin(115200);     // Changed from 9600 baud
+  // Serial1.print("AT+BAUD4"); // Tell the module to change the baud rate to 9600
   delay(1100); // Wait a notch over 1 second to make sure the setting "sticks"
-  Serial1.begin(9600);     // Changed from 9600 baud
+  // Serial1.begin(9600);     // Changed from 9600 baud
 
   hexy.begin();
 }
@@ -40,7 +42,8 @@ void loop() {
     //hexy.delay_ms(200); // wait 200mS
     
     hexy.process(&Serial); //process input from the USB
-    hexy.process(&Serial1); //process input from the board serial (i.e. bluetooth)
+    // Don't use serial 1 for Uno
+    // hexy.process(&Serial1); //process input from the board serial (i.e. bluetooth)
   }
   
 }
