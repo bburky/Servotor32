@@ -40,6 +40,7 @@ uint8_t pin_2_num[8] = {0x08,0x04,0x02,0x01, 0x80,0x40,0x20,0x10};
 // Use Adafruit PWM Servo Driver Library
 // called this way, it uses the default address 0x40
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+Adafruit_PWMServoDriver pwm2 = Adafruit_PWMServoDriver(0x41);
 
 void Servotor32::begin(){
   // Serial setup moved to .ino setup()
@@ -47,6 +48,8 @@ void Servotor32::begin(){
   // Setup pwm output
   pwm.begin();
   pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
+  pwm2.begin();
+  pwm2.setPWMFreq(60);
 
   Timer1.initialize(10);
   Timer1.attachInterrupt(callback);
@@ -320,11 +323,19 @@ void Servotor32::changeServo(byte servo, short pos){
   }
   if(pos == -1){
     update_registers_fast(servo, pos);
-    pwm.setPWM(servo, 0, 0);
+    if (servo < 15) {
+      pwm.setPWM(servo, 0, 0);
+    } else {
+      pwm2.setPWM(servo - 16, 0, 0);
+    }
   }
   else{
     update_registers_fast(servo, pos/10);
-    pwm.setPWM(servo, 0, map(pos, 500, 2500, SERVOMIN, SERVOMAX));
+    if (servo < 15) {
+      pwm.setPWM(servo, 0, constrain(map(pos, 500, 2500, SERVOMIN, SERVOMAX), 0, 4096));
+    } else {
+      pwm2.setPWM(servo - 16, 0, constrain(map(pos, 500, 2500, SERVOMIN, SERVOMAX), 0, 4096));
+    }
   }
 }
 
